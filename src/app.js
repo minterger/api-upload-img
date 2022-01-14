@@ -4,6 +4,7 @@ const multer = require("multer");
 const path = require("path");
 
 const app = express();
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "public/uploads"));
@@ -13,6 +14,7 @@ const storage = multer.diskStorage({
     cb(null, filename);
   }
 });
+
 const upload = multer({
   storage,
   dest: path.join(__dirname, "public/uploads"),
@@ -22,7 +24,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
-//get url
+/**
+ * Obtiene la url de la api
+ * @param {Obejct} req Objeto request de express
+ * @returns 
+ */
 const getUrl = (req) => {
   const url = req.protocol + "://" + req.get("host");
   return url;
