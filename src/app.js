@@ -36,7 +36,7 @@ app.post("/upload", (req, res) => {
   if (!req.files.image.mimetype.includes("image")) {
     return res.status(400).json({
       ok: false,
-      message: "el archivo no es una imagen",
+      message: "The file is not an image",
     });
   }
 
@@ -44,7 +44,7 @@ app.post("/upload", (req, res) => {
     if (err) {
       res.status(500).json({
         ok: false,
-        message: "error al subir la imagen",
+        message: "Error uploading the image",
       });
     } else {
       res.json({
