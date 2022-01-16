@@ -19,6 +19,7 @@ app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
+    
   })
 );
 app.use(cors());
@@ -32,13 +33,22 @@ app.get("/", (req, res) => {
  * sube la imagen
  */
 app.post("/upload", (req, res) => {
+  if (!req.files.image.mimetype.includes("image")) {
+    return res.status(400).json({
+      ok: false,
+      message: "el archivo no es una imagen",
+    });
+  }
+
   cloudinary.uploader.upload(req.files.image.tempFilePath, (err, result) => {
     if (err) {
       res.status(500).json({
-        error: err,
+        ok: false,
+        message: "error al subir la imagen",
       });
     } else {
       res.json({
+        ok: true,
         data: result,
       });
     }
