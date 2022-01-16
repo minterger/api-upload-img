@@ -1,47 +1,52 @@
 const express = require("express");
 const cors = require("cors");
-const multer = require("multer");
-const path = require("path");
+const fileUpload = require("express-fileupload");
+const cloudinary = require("cloudinary").v2;
 
 const app = express();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "public/uploads"));
-  },
-  filename: (req, file, cb) => {
-    const filename = file.fieldname + "-" + Date.now() + path.extname(file.originalname);
-    cb(null, filename);
-  }
-});
-
-const upload = multer({
-  storage,
-  dest: path.join(__dirname, "public/uploads"),
+cloudinary.config({
+  cloud_name: "minterger",
+  api_key: "645972382878563",
+  api_secret: "hUnCkWMVBFpwObWoe1-DEJqIb0g",
 });
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+  })
+);
 app.use(cors());
 
 /**
  * Obtiene la url de la api
  * @param {Obejct} req Objeto request de express
- * @returns 
+ * @returns
  */
 const getUrl = (req) => {
   const url = req.protocol + "://" + req.get("host");
   return url;
 };
 
-app.post("/upload", upload.single("image"), (req, res) => {
-  const url = getUrl(req);
-  const imageUrl = url + "/uploads/" + req.file.filename;
-  res.json({
-    url: imageUrl,
+/**
+ * sube la imagen
+ */
+app.post("/upload", (req, res) => {
+  cloudinary.uploader.upload(req.files.image.tempFilePath, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    } else {
+      console.log(result);
+      res.json({
+        data: result,
+      });
+    }
   });
 });
-
-app.use(express.static(path.join(__dirname, "public")));
 
 module.exports = app;
