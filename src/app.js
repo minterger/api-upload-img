@@ -19,7 +19,6 @@ app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
-    
   })
 );
 app.use(cors());
@@ -40,19 +39,25 @@ app.post("/upload", (req, res) => {
     });
   }
 
-  cloudinary.uploader.upload(req.files.image.tempFilePath, (err, result) => {
-    if (err) {
-      res.status(500).json({
-        ok: false,
-        message: "Error uploading the image",
-      });
-    } else {
-      res.json({
-        ok: true,
-        data: result,
-      });
+  cloudinary.uploader.upload(
+    req.files.image.tempFilePath,
+    {
+      folder: "upload-img-app",
+    },
+    (err, result) => {
+      if (err) {
+        res.status(500).json({
+          ok: false,
+          message: "Error uploading the image",
+        });
+      } else {
+        res.json({
+          ok: true,
+          data: result,
+        });
+      }
     }
-  });
+  );
 });
 
 module.exports = app;
